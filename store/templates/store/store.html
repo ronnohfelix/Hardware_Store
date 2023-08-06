@@ -1,0 +1,48 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+<div class="boxContainer">
+    <table class="elementsContainer">
+        <tr>
+            <td>
+                <form id="searchForm" action="{% url 'search' %}" method="GET">
+                    <input type="text" name="q" placeholder="Search..." class="search">
+                </form>
+            </td>
+            <td>
+                <a href="#" id="searchIcon"><i class="material-icons">search</i></a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var searchIcon = document.getElementById("searchIcon");
+        var searchForm = document.getElementById("searchForm");
+
+        searchIcon.addEventListener("click", function() {
+            searchForm.submit();
+        });
+    });
+</script>
+
+
+	<div class="row">
+        {% for product in products %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{{ product.imageURL}}">
+			<div class="box-element product">
+				<h6><strong>{{ product.name }}</strong></h6>
+				<p>{{ product.description }}</p>
+				<hr>
+				<button data-product={{product.id}}  data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+				<a class="btn btn-outline-success" href="{% url 'cart' %}">View</a>
+				<h4 style="float: right"><strong>Ksh. {{ product.price | floatformat:2 }}</strong></h4>
+
+			</div>
+		</div>
+        {% endfor %}
+    </div>
+{% endblock content %}

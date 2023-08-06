@@ -1,0 +1,18 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block footer %}
+{% endblock footer %}
+{% block content %}
+    <div class="login-container">
+        <h2>Sign Up</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" placeholder="Full Name" name="full_name" required>
+            <input type="email" placeholder="Email" name="email" required>
+            <input type="password" placeholder="Password" name="password1" required>
+            <input type="password" placeholder="Confirm Password" name="password2" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'signin' %}">Sign In</a></p>
+    </div>
+{% endblock %}

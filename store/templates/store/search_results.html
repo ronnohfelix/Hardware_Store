@@ -1,0 +1,23 @@
+{% extends 'store/main.html' %}
+
+{% block content %}
+    <h2>Search Results</h2>
+    {% if results %}
+            {% for result in results %}
+                <div class="col-lg-4">
+                    <img class="thumbnail" src="{{ result.imageURL}}">
+                    <div class="box-element product">
+                        <h6><strong>{{ result.name }}</strong></h6>
+                        <p>{{ result.description }}</p>
+                        <hr>
+                        <button data-product={{result.id}}  data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+                        <a class="btn btn-outline-success" href="{% url 'cart' %}">View</a>
+                        <h4 style="float: right"><strong>Ksh. {{ result.price | floatformat:2 }}</strong></h4>
+        
+                    </div>
+                </div>
+            {% endfor %}
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+{% endblock %}
