@@ -7,7 +7,70 @@ import json
 import datetime
 from .models import *
 from .utils import cookieCart, cartData, guestOrder
+from .forms import CreateUserForm, CustomerForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 # Create your views here.
+
+#@unauthenticated_user
+def registerPage(request):
+        form = CreateUserForm()
+        if request.method == 'POST':
+            form = CreateUserForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                username = form.cleaned_data.get('username')
+
+                group = Group.objects.get(name='customer')
+                user.groups.add(group)
+                Customer.objects.create(
+                     user=user,
+                     name=user.username,
+                )
+            
+
+                messages.success(request,'Account was created for ' + username)
+                return redirect('login')
+        context = {'form':form}
+        return render(request, 'store/signup.html', context)
+
+#@unauthenticated_user
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('store')
+        else:
+             messages.info(request, 'Username OR password is incorrect')
+    context = {}
+    return render(request, 'store/signin.html', context)
+
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
+@login_required(login_url='login')
+def accountSettings(request):
+    customer = request.user.customer
+    form = CustomerForm(instance=customer)
+
+    if request.method == 'POST':
+        form = CustomerForm(request.POST,request.FILES, instance=customer)
+        if form.is_valid():
+            form.save()
+    context = {'form':form}
+    return render(request, 'store/account_settings.html', context)
+
+def customer(request, pk_test):
+    customer = Customer.objects.get(id=pk_test)
+
+    context = {'customer':customer}
+    return render(request, 'home/account_settings.html', context)
 
 def store(request):
 
@@ -92,59 +155,59 @@ def processOrder(request):
 
     return JsonResponse('Payment submitted..', safe=False)
 
-def signin_view(request):
-    if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
+#def signin_view(request):
+ #   if request.method == 'POST':
+  #      email = request.POST['email']
+  #      password = request.POST['password']
 
-        user = auth.authenticate(request, username=email, password=password)
-        if user is not None:
-            auth.login(request, user)
-            messages.success(request, "Welcome back!")
-            request.session['username'] = user.username
-            return redirect('store')
-        else:
-            messages.error(request, "Invalid credentials")
-            return redirect('signin')
+  #      user = auth.authenticate(request, username=email, password=password)
+  #      if user is not None:
+  #          auth.login(request, user)
+  #          messages.success(request, "Welcome back!")
+   #         request.session['username'] = user.username
+   #         return redirect('store')
+   #     else:
+   #         messages.error(request, "Invalid credentials")
+   #         return redirect('signin')
 
-    return render(request, 'store/signin.html')
+   # return render(request, 'store/signin.html')
 
 
-def signup_view(request):
-    if request.method == 'POST':
-        full_name = request.POST['full_name']
-        email = request.POST['email']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
+#def signup_view(request):
+   # if request.method == 'POST':
+   #     full_name = request.POST['full_name']
+   #     email = request.POST['email']
+    #    password1 = request.POST['password1']
+    #    password2 = request.POST['password2']
 
-        if password1 != password2:
-            messages.error(request, "Passwords do not match.")
-            return redirect('signup')  # Redirect back to the sign-up page
+    #    if password1 != password2:
+    #        messages.error(request, "Passwords do not match.")
+    #        return redirect('signup')  # Redirect back to the sign-up page
 
-        # Check if a user with the given email already exists
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "An account with this email already exists.")
-            return redirect('signup')
+     #   # Check if a user with the given email already exists
+     #   if User.objects.filter(email=email).exists():
+     #       messages.error(request, "An account with this email already exists.")
+     #       return redirect('signup')
 
         # Create the user account
-        user = User.objects.create_user(username=email, email=email, password=password1)
-        user.full_name = full_name
-        user.save()
+      #  user = User.objects.create_user(username=email, email=email, password=password1)
+       # user.full_name = full_name
+       # user.save()
 
         # Create associated Customer instance
-        customer = Customer(user=user)
-        customer.save()
+       # customer = Customer(user=user)
+       # customer.save()
         
-        messages.success(request, "Account created successfully. You can now sign in.")
-        return redirect('signin')  # Redirect to the sign-in page
+       # messages.success(request, "Account created successfully. You can now sign in.")
+       # return redirect('signin')  # Redirect to the sign-in page
+#
+   # return render(request, 'store/signup.html')
 
-    return render(request, 'store/signup.html')
-
-def logout_view(request):
-    logout(request)
-    if 'username' in request.session:
-        del request.session['username']
-    return redirect('store') 
+#def logout_view(request):
+ #   logout(request)
+ #   if 'username' in request.session:
+ #       del request.session['username']
+  #  return redirect('store') 
 
 def search_view(request):
     query = request.GET.get('q')

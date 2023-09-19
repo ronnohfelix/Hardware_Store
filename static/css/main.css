@@ -6,6 +6,13 @@ h1,h2,h3,h4,h5,h6{
 	color:hsl(0, 0%, 30%);
 }
 
+@media (max-width: 768px) {
+    h4{
+        font-size: 20px;
+    }
+    
+}
+
 .box-element{
 	box-shadow:hsl(0, 0%, 80%) 0 0 16px;
 	background-color: #fff;
@@ -121,11 +128,11 @@ h1,h2,h3,h4,h5,h6{
     transition: 2s;
 }
 
-.signin{
+.login{
 	margin-right: 3px;
 }
 
-.signup{
+.register{
 	margin-left: 3px;
 }
 
@@ -137,11 +144,6 @@ h1,h2,h3,h4,h5,h6{
 
 /* The footer is fixed to the bottom of the page */
 
-footer {
-    position: fixed;
-    bottom: 0;
-}
-
 @media (max-height:800px) {
     footer {
         position: static;
@@ -150,6 +152,7 @@ footer {
         padding-top: 40px;
     }
 }
+
 
 .footer-distributed {
     background-color: #2d2a30;
@@ -308,7 +311,31 @@ footer {
         margin-left: 0;
     }
 }       
-        
+
+/* The footer is fixed to the bottom of the page */
+footer {
+    position: fixed;
+    bottom: 0;
+}
+
+/* Media query to handle all screens */
+@media (max-width: 880px) {
+    footer {
+        position: static; /* Change position to static for smaller screens */
+    }
+    
+    .footer-distributed {
+        padding: 30px 10px 40px; /* Adjust padding for smaller screens */
+    }
+}
+
+/* Media query to handle larger screens */
+@media (min-width: 881px) {
+    footer {
+        position: static; /* Keep footer fixed for larger screens */
+    }
+}
+
 
 
 .boxContainer{
